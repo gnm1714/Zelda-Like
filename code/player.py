@@ -89,33 +89,33 @@ class Player(Entity):
 
 		# movement
 		if not self.attacking:
-			if keys[pygame.K_w]:
+			if keys[pygame.K_UP]:
 				self.direction.y = -1
 				self.status = 'up'
-			elif keys[pygame.K_s]:
+			elif keys[pygame.K_DOWN]:
 				self.direction.y = 1
 				self.status = 'down'
 			else:
 				self.direction.y = 0
 
-			if keys[pygame.K_d]:
+			if keys[pygame.K_RIGHT]:
 				self.direction.x = 1
 				self.status = 'right'
-			elif keys[pygame.K_a]:
+			elif keys[pygame.K_LEFT]:
 				self.direction.x = -1
 				self.status = 'left'
 			else:
 				self.direction.x = 0
 
 		# attack
-		if keys[pygame.K_SPACE] and not self.attacking:
+		if keys[pygame.K_z] and not self.attacking:
 			self.attacking = True
 			self.attack_time = pygame.time.get_ticks()
 			self.create_attack()
 			self.weapon_attack_sound.play()
 
 		# magic
-		if keys[pygame.K_LSHIFT] and not self.attacking:
+		if keys[pygame.K_x] and not self.attacking:
 			self.attacking = True
 			self.attack_time = pygame.time.get_ticks()
 
@@ -125,7 +125,7 @@ class Player(Entity):
 			self.create_magic(style, strength, cost)
 
 		# weapon switch
-		if keys[pygame.K_q] and self.can_switch_weapon:
+		if not keys[pygame.K_LSHIFT] and keys[pygame.K_c] and self.can_switch_weapon:
 			self.can_switch_weapon = False
 			self.weapon_switch_time = pygame.time.get_ticks()
 			self.weapon_index += 1
@@ -134,7 +134,7 @@ class Player(Entity):
 			self.weapon = list(weapon_data.keys())[self.weapon_index]
 
 		# magic switch
-		if keys[pygame.K_e] and self.can_switch_magic:
+		if keys[pygame.K_LSHIFT] and keys[pygame.K_c] and self.can_switch_magic:
 			self.can_switch_magic = False
 			self.magic_switch_time = pygame.time.get_ticks()
 			self.magic_index += 1

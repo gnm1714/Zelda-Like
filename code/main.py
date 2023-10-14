@@ -36,7 +36,7 @@ class Game:
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_SPACE:
+				if event.key == pygame.K_z:
 					self.start_time = pygame.time.get_ticks()
 					self.state = 'game'
 

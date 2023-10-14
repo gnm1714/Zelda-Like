@@ -11,7 +11,7 @@ HITBOX_OFFSET = {
     'player': -26,
     'object': -40,
     'grass': -10,
-    'invisible': -50
+    'invisible': 0
 }
 
 # ui

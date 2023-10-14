@@ -77,8 +77,8 @@ class UI:
         self.show_bar(player.energy, player.stats['energy'], self.energy_bar_rect, ENERGY_COLOR)
 
         self.show_exp(player.exp)
-        at_rect = self.selection_box(10, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'Space', not player.can_switch_weapon) # weapon
+        at_rect = self.selection_box(10, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'Z', not player.can_switch_weapon) # weapon
         self.weapon_overlay(player.weapon_index, at_rect)
 
-        mg_rect = self.selection_box(ITEM_BOX_SIZE + 20, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'Shift', not player.can_switch_magic) # magic
+        mg_rect = self.selection_box(ITEM_BOX_SIZE + 20, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'X', not player.can_switch_magic) # magic
         self.magic_overlay(player.magic_index, mg_rect)
