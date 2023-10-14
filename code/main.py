@@ -8,7 +8,7 @@ class Game:
 
 		# general setup
 		pygame.init()
-		self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
+		self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
 		pygame.display.set_caption('Zelda')
 		self.clock = pygame.time.Clock()
 
@@ -21,15 +21,22 @@ class Game:
 		self.main_sound.play(loops=-1)
 
 		self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE + 10)
+		self.title_font = pygame.font.Font(UI_FONT, UI_FONT_SIZE + 50)
 		self.start_time = None
 
 
 	def title_screen(self):
-		self.screen.fill(WATER_COLOR)
-		text_surf = self.font.render('Start', False, TEXT_COLOR)
-		text_rect = text_surf.get_rect(
-			midtop=(WIDTH // 2, HEIGTH // 2))
-		self.screen.blit(text_surf, text_rect)
+		self.screen.fill('#10FFAA')
+
+		title_surf = self.title_font.render('Zelda Game', False, TEXT_COLOR)
+		title_rect = title_surf.get_rect(
+			midtop=(WIDTH // 2, HEIGHT // 2 - 150))
+		self.screen.blit(title_surf, title_rect)
+
+		start_surf = self.font.render('Press Z to Start', False, TEXT_COLOR)
+		start_rect = start_surf.get_rect(
+			midtop=(WIDTH // 2, HEIGHT // 2))
+		self.screen.blit(start_surf, start_rect)
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:

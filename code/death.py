@@ -22,16 +22,16 @@ class Death:
         keys = pygame.key.get_pressed()
 
         if self.can_move:
-            if keys[pygame.K_s] and self.selection_index < 1:
+            if keys[pygame.K_DOWN] and self.selection_index < 1:
                 self.selection_index += 1
                 self.can_move = False
                 self.selection_time = pygame.time.get_ticks()
-            elif keys[pygame.K_w] and self.selection_index >= 1:
+            elif keys[pygame.K_UP] and self.selection_index >= 1:
                 self.selection_index -= 1
                 self.can_move = False
                 self.selection_time = pygame.time.get_ticks()
 
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_z]:
                 self.can_move = False
                 self.selection_time = pygame.time.get_ticks()
                 self.item_list[self.selection_index].trigger(self.player)
