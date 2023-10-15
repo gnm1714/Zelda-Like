@@ -1,5 +1,7 @@
 import pygame
 from settings import *
+from ui import UI
+from support import *
 
 class Pause:
     def __init__(self, player):
@@ -9,33 +11,117 @@ class Pause:
         self.attribute_names = list(player.stats.keys())
         self.max_values = list(player.max_stats.values())
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
+        self.box_size = self.display_surface.get_size()[0] * 0.1
 
-        self.height = self.display_surface.get_size()[1] * 0.8
-        self.width = self.display_surface.get_size()[0] // 6
-        self.create_pause_items()
+        self.pause_surface = pygame.Surface((WIDTH, HEIGHT))
+        self.pause_surface.set_alpha(128)
+        self.pause_surface.fill('#000000')
+        self.health_bar_rect = pygame.Rect(10, 10, HEALTH_BAR_WIDTH, BAR_HEIGHT)
+        self.energy_bar_rect = pygame.Rect(10, 34, ENERGY_BAR_WIDTH, BAR_HEIGHT)
+
+        self.menu_items = ['Weapon', 'Magic']
+        self.ui = UI()
 
         self.selection_index = 0
         self.selection_time = None
         self.can_move = True
+        self.show_menu = False
+
+        self.weapon_graphics = []
+        for weapon in weapon_data.values():
+            path = weapon['graphic']
+            weapon = pygame.image.load(path).convert_alpha()
+            #weapon = pygame.transform.scale(weapon, (self.box_size, self.box_size - 30))
+            self.weapon_graphics.append(weapon)
+
+        self.magic_graphics = []
+        for magic in magic_data.values():
+            path = magic['graphic']
+            magic = pygame.image.load(path).convert_alpha()
+            #magic = pygame.transform.scale(magic, (self.box_size - 30, self.box_size - 30))
+            self.magic_graphics.append(magic)
 
 
     def input(self):
         keys = pygame.key.get_pressed()
 
         if self.can_move:
-            if keys[pygame.K_d] and self.selection_index < self.attribute_number - 1:
-                self.selection_index += 1
+            if keys[pygame.K_DOWN]:
+                if self.selection_index < len(self.menu_items) - 1:
+                    self.selection_index += 1
+                else:
+                    self.selection_index = 0
                 self.can_move = False
                 self.selection_time = pygame.time.get_ticks()
-            elif keys[pygame.K_a] and self.selection_index >= 1:
-                self.selection_index -= 1
+            elif keys[pygame.K_UP]:
+                if self.selection_index >= 1:
+                    self.selection_index -= 1
+                else:
+                    self.selection_index = len(self.menu_items) - 1
                 self.can_move = False
                 self.selection_time = pygame.time.get_ticks()
 
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_z]:
                 self.can_move = False
                 self.selection_time = pygame.time.get_ticks()
-                self.item_list[self.selection_index].trigger(self.player)
+                self.selection_index = 0
+                self.show_menu = True
+
+            if keys[pygame.K_x] and self.show_menu:
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+                self.show_menu = False
+
+
+    def menu_input(self):
+        keys = pygame.key.get_pressed()
+
+        if self.can_move:
+            if keys[pygame.K_RIGHT]:
+                if self.selection_index < len(self.weapon_graphics) - 1:
+                    self.selection_index += 1
+                else:
+                    self.selection_index = 0
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+            elif keys[pygame.K_LEFT]:
+                if self.selection_index >= 1:
+                    self.selection_index -= 1
+                else:
+                    self.selection_index = len(self.weapon_graphics) - 1
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+            elif keys[pygame.K_DOWN]:
+                if self.selection_index < len(self.weapon_graphics) - 2:
+                    self.selection_index += 2
+                elif self.selection_index == len(self.weapon_graphics) - 2:
+                    self.selection_index += 1
+                else:
+                    self.selection_index = 0
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+            elif keys[pygame.K_UP]:
+                if self.selection_index >= 2:
+                    self.selection_index -= 2
+                elif self.selection_index == 1:
+                    self.selection_index = 0
+                else:
+                    self.selection_index = len(self.weapon_graphics) - 1
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+
+            if keys[pygame.K_z]:
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+                self.trigger(list(weapon_data.keys())[self.selection_index])
+                self.selection_index = 0
+                self.show_menu = False
+
+            if keys[pygame.K_x]:
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+                self.selection_index = 0
+                self.show_menu = False
 
 
     def selection_cooldown(self):
@@ -46,29 +132,92 @@ class Pause:
                 self.can_move = True
 
 
-    def create_pause_items(self):
-        self.item_list = []
+    def selection_box(self, left, top, text):
+        bg_rect = pygame.Rect(left, top, self.box_size, self.box_size)
+        pygame.draw.rect(self.display_surface, UI_BG_COLOR, bg_rect)
 
-        for item, index in enumerate(range(self.attribute_number)):
-            full_width = self.display_surface.get_size()[0]
-            increment = full_width // self.attribute_number
-            left = (item * increment) + (increment - self.width) // 2
-            top = self.display_surface.get_size()[1] * 0.1
+        if not self.show_menu:
+            if text == self.menu_items[self.selection_index]:
+                pygame.draw.rect(self.display_surface, UI_BORDER_COLOR_ACTIVE, bg_rect, 3)
+            else:
+                pygame.draw.rect(self.display_surface, UI_BORDER_COLOR, bg_rect, 3)
+        else:
+            border_rect = pygame.Rect(left - 2, top - 2, self.box_size + 4, self.box_size + 4)
+            pygame.draw.rect(self.display_surface, UI_BG_COLOR, border_rect)
+            if text == list(weapon_data.keys())[self.selection_index]:
+                pygame.draw.rect(self.display_surface, UI_BORDER_COLOR_ACTIVE, border_rect, 3)
+            else:
+                pygame.draw.rect(self.display_surface, UI_BORDER_COLOR, bg_rect, 3)
 
-            item = Item(left, top, self.width, self.height, index, self.font)
-            self.item_list.append(item)
+        return bg_rect
+
+
+    def weapon_overlay(self, weapon_index, rect):
+        weapon_surf = self.weapon_graphics[weapon_index]
+        weapon_rect = weapon_surf.get_rect(center=rect.center)
+
+        self.display_surface.blit(weapon_surf, weapon_rect)
+
+
+    def magic_overlay(self, magic_index, rect):
+        magic_surf = self.magic_graphics[magic_index]
+        magic_rect = magic_surf.get_rect(center=rect.center)
+
+        self.display_surface.blit(magic_surf, magic_rect)
+
+
+    def trigger(self, name):
+        if name in list(weapon_data.keys()):
+            set_weapon_index(self.selection_index)
+            self.selection_index = 0
+        else:
+            self.menu_input()
 
 
     def display(self):
-        self.input()
-        self.selection_cooldown()
+        if not self.show_menu:
+            self.input()
+            self.selection_cooldown()
 
-        for index, item in enumerate(self.item_list):
-            name = self.attribute_names[index]
-            value = self.player.get_value_by_index(index)
-            max_value = self.max_values[index]
-            cost = self.player.get_cost_by_index(index)
-            item.display(self.display_surface, self.selection_index, name, value, max_value, cost)
+        self.display_surface.blit(self.pause_surface, (0, 0))
+
+        self.ui.show_bar(self.player.health, self.player.stats['health'], self.health_bar_rect, HEALTH_COLOR)
+        self.ui.show_bar(self.player.energy, self.player.stats['energy'], self.energy_bar_rect, ENERGY_COLOR)
+
+        at_rect = self.selection_box(self.display_surface.get_size()[1] * 0.4,
+                                     self.display_surface.get_size()[1] * 0.2, 'Weapon')  # weapon
+        self.weapon_overlay(get_weapon_index(), at_rect)
+
+        mg_rect = self.selection_box(self.display_surface.get_size()[1] * 0.4,
+                                     self.display_surface.get_size()[1] * 0.5, 'Magic')  # magic
+        self.magic_overlay(get_magic_index(), mg_rect)
+
+        if self.show_menu:
+            self.menu_input()
+            self.selection_cooldown()
+
+            # make background
+            bg_rect = pygame.Surface((int(self.display_surface.get_size()[0] * 0.3),
+                                      int(self.display_surface.get_size()[1] * 0.9)))
+            bg_rect.set_alpha(192)
+            bg_rect.fill((34, 34, 34))
+            self.display_surface.blit(bg_rect, (self.display_surface.get_size()[0] // 2,
+                                                int(self.display_surface.get_size()[1] * 0.05)))
+
+            # fill w/ boxes
+            for index in range(0, len(weapon_data)):
+                left1 = (self.display_surface.get_size()[0] // 2) + int((self.display_surface.get_size()[0] * 0.3) // 7)
+                left2 = (self.display_surface.get_size()[0] // 2) + int((self.display_surface.get_size()[0] * 0.3) // 1.85)
+                top = int(self.display_surface.get_size()[1] * 0.05) + 20
+                if index % 2 == 0:
+                    box = self.selection_box(left1, top + ((self.box_size // 1.15) * index), list(weapon_data.keys())[index])
+                    pygame.draw.rect(self.display_surface, UI_BG_COLOR, box)
+                    self.weapon_overlay(index, box)
+                else:
+                    box = self.selection_box(left2, top + ((self.box_size // 1.15) * (index - 1)), list(weapon_data.keys())[index])
+                    pygame.draw.rect(self.display_surface, UI_BG_COLOR, box)
+                    self.weapon_overlay(index, box)
+
 
 
 class Item:

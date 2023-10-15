@@ -17,7 +17,7 @@ class Game:
 
 		# sound
 		self.main_sound = pygame.mixer.Sound('../audio/main.ogg')
-		self.main_sound.set_volume(0.3)
+		self.main_sound.set_volume(0.01)
 		self.main_sound.play(loops=-1)
 
 		self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE + 10)

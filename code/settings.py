@@ -13,6 +13,8 @@ HITBOX_OFFSET = {
     'grass': -10,
     'invisible': 0
 }
+WEAPON_INDEX = 0
+MAGIC_INDEX = 0
 
 # ui
 BAR_HEIGHT = 20
@@ -53,3 +55,20 @@ monster_data = {
     'spirit': {'health': 100, 'exp':110, 'damage': 8, 'attack_type': 'thunder', 'attack_sound': '../audio/attack/fireball.wav', 'speed': 4, 'resistance': 3, 'attack_radius': 60, 'notice_radius': 350},
     'bamboo': {'health': 70, 'exp':120, 'damage': 6, 'attack_type': 'leaf_attack', 'attack_sound': '../audio/attack/slash.wav', 'speed': 3, 'resistance': 3, 'attack_radius': 50, 'notice_radius': 300}
 }
+
+
+def set_weapon_index(index):
+    global WEAPON_INDEX
+    WEAPON_INDEX = index
+
+def get_weapon_index():
+    return WEAPON_INDEX
+
+
+def set_magic_index(index):
+    global MAGIC_INDEX
+    MAGIC_INDEX = index
+
+
+def get_magic_index():
+    return MAGIC_INDEX

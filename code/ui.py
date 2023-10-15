@@ -41,7 +41,7 @@ class UI:
         self.display_surface.blit(text_surf, text_rect)
 
 
-    def selection_box(self, left, top, text, has_switched):
+    def selection_box(self, left, top, text, has_switched = False):
         bg_rect = pygame.Rect(left, top, ITEM_BOX_SIZE, ITEM_BOX_SIZE)
         pygame.draw.rect(self.display_surface, UI_BG_COLOR, bg_rect)
 
@@ -77,8 +77,8 @@ class UI:
         self.show_bar(player.energy, player.stats['energy'], self.energy_bar_rect, ENERGY_COLOR)
 
         self.show_exp(player.exp)
-        at_rect = self.selection_box(10, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'Z', not player.can_switch_weapon) # weapon
-        self.weapon_overlay(player.weapon_index, at_rect)
+        at_rect = self.selection_box(10, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'Z') # weapon
+        self.weapon_overlay(get_weapon_index(), at_rect)
 
-        mg_rect = self.selection_box(ITEM_BOX_SIZE + 20, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'X', not player.can_switch_magic) # magic
-        self.magic_overlay(player.magic_index, mg_rect)
+        mg_rect = self.selection_box(ITEM_BOX_SIZE + 20, self.display_surface.get_size()[1] - (ITEM_BOX_SIZE + 10), 'X') # magic
+        self.magic_overlay(get_magic_index(), mg_rect)
